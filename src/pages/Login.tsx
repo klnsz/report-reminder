@@ -1,10 +1,8 @@
 import {
-  Button,
   Grid,
   InputAdornment,
   IconButton,
   TextField,
-  Box,
   Link,
   Avatar,
   Typography,
@@ -18,24 +16,12 @@ import {
   Visibility,
   VisibilityOff,
 } from "@mui/icons-material";
+import ApiService from "../services/api.service";
+import { AxiosResponse } from "axios";
 
 interface ICredential {
   email: string,
   password: string
-}
-
-async function loginUser(credentials: ICredential) {
-  return fetch('http://localhost:5000/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(credentials)
-  }).then(data => data.json()).catch(err => {
-    return {
-      message: err.message
-    }
-  })
 }
 
 const Login: FC<any> = () => {
@@ -102,16 +88,11 @@ const Login: FC<any> = () => {
       setState((prev) => ({ ...prev, loading: false }));
       return;
     }
-    const response = await loginUser({ email: state.email, password: state.password }).catch(err => {
-      return 
-    })
-    console.log(response)
-    if ('accessToken' in response) {
-      console.log(response)
-    } else {
-      alert('Failed')
-    }
-    setState((prev) => ({ ...prev, loading: false }));
+    ApiService.post('login', { email: state.email, password: state.password }).then((res: AxiosResponse) => {
+      console.log(res.data)
+    }).catch(err => {
+      console.log(err)
+    }).finally(() => setState((prev) => ({ ...prev, loading: false })))
   };
 
   return (
