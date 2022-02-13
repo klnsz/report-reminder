@@ -19,6 +19,25 @@ import {
   VisibilityOff,
 } from "@mui/icons-material";
 
+interface ICredential {
+  email: string,
+  password: string
+}
+
+async function loginUser(credentials: ICredential) {
+  return fetch('http://localhost:5000/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(credentials)
+  }).then(data => data.json()).catch(err => {
+    return {
+      message: err.message
+    }
+  })
+}
+
 const Login: FC<any> = () => {
   const [state, setState] = useState<{
     email: string;
@@ -45,7 +64,8 @@ const Login: FC<any> = () => {
 
   const re =
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  const emailChange = (evt: ChangeEvent<HTMLInputElement>) => {
+  
+    const emailChange = (evt: ChangeEvent<HTMLInputElement>) => {
     console.log(evt.target.value);
     setState((prevState) => ({
       ...prevState,
@@ -70,12 +90,28 @@ const Login: FC<any> = () => {
     }));
   };
 
-  const login = () => {
+  const login = async () => {
     setState((prev) => ({ ...prev, loading: true }));
-    if (!re.test(state.email) || !state.password) {
+    const emailCheck = re.test(state.email)
+    const passCheck = !!state.password
+
+    if (!emailCheck) setState((prev) => ({...prev, emailError: true}))
+    if (!passCheck) setState((prev) => ({...prev, passError: true}))
+
+    if (!emailCheck || !passCheck) {
       setState((prev) => ({ ...prev, loading: false }));
       return;
     }
+    const response = await loginUser({ email: state.email, password: state.password }).catch(err => {
+      return 
+    })
+    console.log(response)
+    if ('accessToken' in response) {
+      console.log(response)
+    } else {
+      alert('Failed')
+    }
+    setState((prev) => ({ ...prev, loading: false }));
   };
 
   return (
