@@ -4,8 +4,9 @@ import {
   IconButton,
   TextField,
   Link,
+  Alert,
   Avatar,
-  Typography,
+  Typography, AlertColor,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import React, { ChangeEvent, FC, useState } from "react";
@@ -17,12 +18,14 @@ import {
   VisibilityOff,
 } from "@mui/icons-material";
 import ApiService from "../services/api.service";
-import { AxiosResponse } from "axios";
+import axios, {AxiosError, AxiosResponse} from "axios";
 
-interface ICredential {
-  email: string,
-  password: string
+interface ILoginStatus {
+  show: Boolean,
+  status: AlertColor,
+  message: String
 }
+
 
 const Login: FC<any> = () => {
   const [state, setState] = useState<{
@@ -31,7 +34,6 @@ const Login: FC<any> = () => {
     emailError: boolean;
     passError: boolean;
     showPassword: boolean;
-    loading?: boolean;
   }>({
     email: "",
     password: "",
@@ -41,6 +43,12 @@ const Login: FC<any> = () => {
   });
 
   const [windowHeight, setWindowHeight] = useState(window.innerHeight / 2);
+  const [loading, setLoading] = useState(false)
+  const [loginStatus, setLoginStatus] = useState({
+    show: false,
+    status: 'info',
+    message: ''
+  } as ILoginStatus)
 
   const columns = {
     xs: 12,
@@ -77,22 +85,53 @@ const Login: FC<any> = () => {
   };
 
   const login = async () => {
-    setState((prev) => ({ ...prev, loading: true }));
-    const emailCheck = re.test(state.email)
-    const passCheck = !!state.password
 
-    if (!emailCheck) setState((prev) => ({...prev, emailError: true}))
-    if (!passCheck) setState((prev) => ({...prev, passError: true}))
+    setLoading(true)
+    setLoginStatus({
+      show: false,
+      status: 'info',
+      message: ''
+    })
 
-    if (!emailCheck || !passCheck) {
-      setState((prev) => ({ ...prev, loading: false }));
-      return;
+    const emailValid = re.test(state.email)
+    const passValid = !!state.password
+    console.log(emailValid, passValid)
+    if (emailValid && passValid) {
+      ApiService.post('auth/login',
+          { email: state.email, password: state.password },
+          { withCredentials: true, headers: {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'} }
+      ).then((res: AxiosResponse) => {
+        console.log(res.data)
+        if (res.data.email) {
+          setLoginStatus({
+            show: true,
+            status: 'success',
+            message: 'Successfully logged in. You are being redirected...'
+          })
+        }
+      }).catch((err: AxiosError | Error) => {
+        let message = 'Something happened. Please try again.'
+        if (axios.isAxiosError(err)) {
+          if (err.response?.status === 401) {
+            message = 'Username or password is wrong. Please check the inputs and try again.'
+          }
+          console.log(err.response?.status, err.response?.data)
+        }
+        setLoginStatus({
+          show: true,
+          status: 'error',
+          message: message
+        })
+      }).finally(() => setLoading(false))
+    } else {
+      setLoading(false)
+      setState((prev) => ({
+        ...prev, 
+        emailError: !emailValid, 
+        passError: !passValid
+      }))
     }
-    ApiService.post('login', { email: state.email, password: state.password }).then((res: AxiosResponse) => {
-      console.log(res.data)
-    }).catch(err => {
-      console.log(err)
-    }).finally(() => setState((prev) => ({ ...prev, loading: false })))
+
   };
 
   return (
@@ -120,6 +159,10 @@ const Login: FC<any> = () => {
             Sign in
           </Typography>
         </Grid>
+
+        {loginStatus.show &&
+            <Alert severity={loginStatus.status} sx={{ mb: 2 }}>{loginStatus.message}</Alert>
+        }
 
         <TextField
           error={state.emailError}
@@ -160,7 +203,7 @@ const Login: FC<any> = () => {
           }}
         ></TextField>
         <LoadingButton
-          loading={state.loading}
+          loading={loading}
           onClick={login}
           endIcon={<KeyboardArrowRight />}
           disabled={state.emailError || state.passError}
