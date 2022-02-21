@@ -17,8 +17,9 @@ import {
   Visibility,
   VisibilityOff,
 } from "@mui/icons-material";
-import ApiService from "../services/api.service";
-import axios, {AxiosError, AxiosResponse} from "axios";
+import {SET_MESSAGE} from "../actions/types";
+import {login} from '../actions/auth'
+import {useDispatch} from "react-redux";
 
 interface ILoginStatus {
   show: Boolean,
@@ -41,6 +42,8 @@ const Login: FC<any> = () => {
     passError: false,
     showPassword: false,
   });
+
+  const dispatch = useDispatch();
 
   const [windowHeight, setWindowHeight] = useState(window.innerHeight / 2);
   const [loading, setLoading] = useState(false)
@@ -84,7 +87,7 @@ const Login: FC<any> = () => {
     }));
   };
 
-  const login = async () => {
+  const handleLogin = async () => {
 
     setLoading(true)
     setLoginStatus({
@@ -92,46 +95,32 @@ const Login: FC<any> = () => {
       status: 'info',
       message: ''
     })
-
     const emailValid = re.test(state.email)
     const passValid = !!state.password
     console.log(emailValid, passValid)
     if (emailValid && passValid) {
-      ApiService.post('auth/login',
-          { email: state.email, password: state.password },
-          { withCredentials: true, headers: {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'} }
-      ).then((res: AxiosResponse) => {
-        console.log(res.data)
-        if (res.data.email) {
-          setLoginStatus({
-            show: true,
-            status: 'success',
-            message: 'Successfully logged in. You are being redirected...'
-          })
-        }
-      }).catch((err: AxiosError | Error) => {
-        let message = 'Something happened. Please try again.'
-        if (axios.isAxiosError(err)) {
-          if (err.response?.status === 401) {
-            message = 'Username or password is wrong. Please check the inputs and try again.'
-          }
-          console.log(err.response?.status, err.response?.data)
-        }
+      try {
+        await dispatch(login({
+          email: state.email,
+          password: state.password
+        }))
+        setLoginStatus({
+          show: true,
+          status: 'success',
+          message: 'Successfully logged in. You are being redirected...'
+        })
+      } catch (e) {
+        console.log(e);
         setLoginStatus({
           show: true,
           status: 'error',
-          message: message
+          message: e as string
         })
-      }).finally(() => setLoading(false))
-    } else {
-      setLoading(false)
-      setState((prev) => ({
-        ...prev, 
-        emailError: !emailValid, 
-        passError: !passValid
-      }))
+      } finally {
+        setLoading(false)
+      }
+      console.log('Logged in');
     }
-
   };
 
   return (
@@ -204,7 +193,7 @@ const Login: FC<any> = () => {
         ></TextField>
         <LoadingButton
           loading={loading}
-          onClick={login}
+          onClick={handleLogin}
           endIcon={<KeyboardArrowRight />}
           disabled={state.emailError || state.passError}
           color="primary"
