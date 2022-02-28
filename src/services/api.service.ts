@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from "axios"
 
-axios.defaults.baseURL = 'http://localhost:3000'
+axios.defaults.baseURL = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://backend.kalinsaz.dev'
 
 const ApiService = {
     setHeader() {
