@@ -17,9 +17,9 @@ import {
   Visibility,
   VisibilityOff,
 } from "@mui/icons-material";
-import {SET_MESSAGE} from "../actions/types";
 import {login} from '../actions/auth'
 import {useDispatch} from "react-redux";
+import { useNavigate  } from "react-router-dom";
 
 interface ILoginStatus {
   show: Boolean,
@@ -44,6 +44,8 @@ const Login: FC<any> = () => {
   });
 
   const dispatch = useDispatch();
+
+  const history = useNavigate ()
 
   const [windowHeight, setWindowHeight] = useState(window.innerHeight / 2);
   const [loading, setLoading] = useState(false)
@@ -109,6 +111,7 @@ const Login: FC<any> = () => {
           status: 'success',
           message: 'Successfully logged in. You are being redirected...'
         })
+        history('/')
       } catch (e) {
         console.log(e);
         setLoginStatus({

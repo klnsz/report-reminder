@@ -9,8 +9,7 @@ export interface ILogin {
 export const AuthService = {
     login (data: ILogin) {
         return ApiService.post('auth/login',
-            data,
-            { withCredentials: true, headers: {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'} }
+            data
         ).then((res: AxiosResponse) => {
             return res.data
         }).catch((err: AxiosError | Error) => {
@@ -25,8 +24,8 @@ export const AuthService = {
         })
     },
     isLoggedIn: () => {
-        return ApiService.get('auth', {}, {withCredentials: true}).then(res => {
-            console.log('Logged In');
+        return ApiService.get('auth').then(res => {
+            console.log('Logged In', res.data);
             return Promise.resolve(res.data)
         }).catch(err => {
             console.log('Needs to be logged in');

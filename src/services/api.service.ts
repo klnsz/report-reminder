@@ -12,12 +12,18 @@ const ApiService = {
     get(endpoint: string, params: object = {}, opt: AxiosRequestConfig = {}) {
         return axios.get(endpoint, {
             params,
+            withCredentials: true,
+            headers: {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'},
             ...opt
         })
     },
     
      post (endpoint: string, data: object = {}, opt: AxiosRequestConfig = {}) {
-        return axios.post(endpoint, data, opt)
+        return axios.post(endpoint, data, {
+            withCredentials: true,
+            headers: {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'},
+            ...opt
+        })
     }
 }
 
