@@ -122,6 +122,13 @@ const Login: FC<any> = () => {
         setLoading(false)
       }
       console.log('Logged in');
+    } else {
+      setLoginStatus({
+        show: true,
+        status: 'error',
+        message: 'Fields can not be empty.'
+      })
+      setLoading(false)
     }
   };
 
