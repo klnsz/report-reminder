@@ -27,6 +27,11 @@ interface ILoginStatus {
   message: String
 }
 
+export const columns = {
+  xs: 12,
+  md: 4,
+  xl: 3,
+};
 
 const Login: FC<any> = () => {
   const [state, setState] = useState<{
@@ -54,12 +59,6 @@ const Login: FC<any> = () => {
     status: 'info',
     message: ''
   } as ILoginStatus)
-
-  const columns = {
-    xs: 12,
-    md: 4,
-    xl: 3,
-  };
 
   const re =
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

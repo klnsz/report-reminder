@@ -1,7 +1,6 @@
 
 import {Box, CircularProgress, Container, Typography} from "@mui/material";
-import { createTheme } from '@mui/material/styles';
-import {Route, BrowserRouter, Routes, useLocation, Navigate, useNavigate} from "react-router-dom";
+import {Route, BrowserRouter, Routes, useLocation, Navigate} from "react-router-dom";
 import './App.css';
 import Header from "./components/Header";
 import Home from "./pages/Home";
@@ -12,6 +11,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {AuthService} from "./services/auth.service";
 import {LOGIN_FAIL, LOGIN_SUCCESS} from "./actions/types";
 import MyReports from "./pages/MyReports";
+import ResetPassword from "./pages/ResetPassword";
 function App() {
 
   const [loading, setLoading] = useState(true)
@@ -53,6 +53,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="login" element={<Login />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="send-report" element={
             <RequireAuth auth={auth}>
               <SendMessage />
@@ -71,6 +72,9 @@ function App() {
 }
 function RequireAuth({ children, auth }: { children: JSX.Element, auth: any }) {
   let location = useLocation();
+  if (auth.user && auth.user.passwordReset) {
+    return <Navigate to="/reset-password" state={{ from: location }} replace />;
+  }
   if (!auth.isLoggedIn) {
     console.log('Pushed to login');
     // Redirect them to the /login page, but save the current location they were
