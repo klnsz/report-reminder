@@ -1,4 +1,4 @@
-export default function timeConverter(UNIX_timestamp: string | number | Date) {
+export default function timeConverter(UNIX_timestamp: string | number | Date, hours=true) {
   const a = new Date(UNIX_timestamp);
   const zeroPad = (num: number, places: any) =>
     String(num).padStart(places, "0");
@@ -22,7 +22,8 @@ export default function timeConverter(UNIX_timestamp: string | number | Date) {
   const hour = zeroPad(a.getHours(), 2);
   const min = zeroPad(a.getMinutes(), 2);
   const sec = zeroPad(a.getSeconds(), 2);
-  const time =
-    date + " " + month + " " + year + " " + hour + ":" + min + ":" + sec;
+  let time =
+    date + " " + month + " " + year
+  if (hours) time +=" " + hour + ":" + min + ":" + sec;
   return time;
 }

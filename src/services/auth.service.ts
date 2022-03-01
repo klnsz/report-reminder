@@ -32,5 +32,7 @@ export const AuthService = {
             return Promise.reject()
         })
     },
-    logout () {}
+    logout () {
+        return ApiService.get('auth/logout')
+    }
 }

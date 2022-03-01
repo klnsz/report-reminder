@@ -27,7 +27,7 @@ const SendMessage: FC<any> = () => {
 
   function parseDate() {
     let date = new Date()
-    return timeConverter(date)
+    return timeConverter(date, false)
   }
 
   function handleChange(e: ChangeEvent<HTMLInputElement>) {

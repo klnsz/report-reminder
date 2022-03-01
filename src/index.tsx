@@ -5,11 +5,23 @@ import App from './App';
 // import reportWebVitals from './reportWebVitals';
 import {Provider} from "react-redux";
 import {store} from "./store";
+import {createTheme} from "@mui/material/styles";
+import {ThemeProvider} from "@emotion/react";
+
+const font = "'Montserrat', sans-serif";
+
+const theme = createTheme({
+  typography: {
+    fontFamily: font
+  }
+});
 
 ReactDOM.render(
   <React.StrictMode>
       <Provider store={store}>
-        <App />
+        <ThemeProvider theme={theme}>
+          <App />
+        </ThemeProvider>
       </Provider>
   </React.StrictMode>,
   document.getElementById('root')
