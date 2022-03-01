@@ -206,13 +206,13 @@ const Login: FC<any> = () => {
         >
           Sign In
         </LoadingButton>
-        <Grid container sx={{ mt: 1 }}>
-          <Grid item xs>
-            <Link href="#" underline="hover">
-              Forgot password?
-            </Link>
-          </Grid>
-        </Grid>
+        {/*<Grid container sx={{ mt: 1 }}>*/}
+        {/*  <Grid item xs>*/}
+        {/*    <Link href="#" underline="hover">*/}
+        {/*      Forgot password?*/}
+        {/*    </Link>*/}
+        {/*  </Grid>*/}
+        {/*</Grid>*/}
       </Grid>
     </Grid>
   );
