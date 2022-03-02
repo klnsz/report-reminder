@@ -6,7 +6,7 @@ import {
   Link,
   Alert,
   Avatar,
-  Typography, AlertColor,
+  Typography, AlertColor, Box, Paper,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import React, { ChangeEvent, FC, useState } from "react";
@@ -168,6 +168,13 @@ const Login: FC<any> = () => {
           onChange={emailChange}
           fullWidth
           value={state.email}
+          onKeyPress={(ev) => {
+            if (ev.key === 'Enter') {
+              // Do code here
+              handleLogin()
+              ev.preventDefault();
+            }
+          }}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -187,6 +194,13 @@ const Login: FC<any> = () => {
           onChange={passChange}
           fullWidth
           value={state.password}
+          onKeyPress={(ev) => {
+            if (ev.key === 'Enter') {
+              // Do code here
+              handleLogin()
+              ev.preventDefault();
+            }
+          }}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
